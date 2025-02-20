@@ -1,29 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Task List</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Lato';
-        }
-    </style>
-</head>
-<body id="app-layout">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                Task List
-            </a>
-        </div>
-    </nav>
+@extends('front.index')
+@section('content')
 
     <div class="container mt-4">
+        <h2>Task List App</h2>
         <div class="offset-md-2 col-md-8">
             <div class="card">
                 @if (isset($task))
@@ -31,11 +10,12 @@
                         Update Task
                     </div>
                     <div class="card-body">
-                        <form action="{{ url('update/' . $task->id) }}" method="POST">
+                        <form action="{{ url('tasks/edit/' . $task->id) }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label for="task-name" class="form-label">Task</label>
-                                <input type="text" name="name" id="task-name" class="form-control" value="{{ $task->name }}">
+                                <input type="text" name="name" id="task-name" class="form-control"
+                                    value="{{ $task->name }}">
                             </div>
                             <div>
                                 <button type="submit" class="btn btn-primary">
@@ -82,13 +62,13 @@
                                 <tr>
                                     <td>{{ $task->name }}</td>
                                     <td>
-                                        <form action="{{ url('delete/' . $task->id) }}" method="POST" class="d-inline">
+                                        <form action="{{ url('tasks/delete/' . $task->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             <button type="submit" class="btn btn-danger">
                                                 <i class="fa fa-trash me-2"></i>Delete
                                             </button>
                                         </form>
-                                        <a href="{{ url('edit/' . $task->id) }}" class="btn btn-info d-inline">
+                                        <a href="{{ url('tasks/edit/' . $task->id) }}" class="btn btn-info d-inline">
                                             <i class="fa fa-edit me-2"></i>Edit
                                         </a>
                                     </td>
@@ -100,7 +80,4 @@
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    @endsection

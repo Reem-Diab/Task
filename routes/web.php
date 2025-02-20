@@ -1,69 +1,20 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// مسارات المهام
+Route::get('/tasks', [TaskController::class, 'index']);
+Route::post('/create', [TaskController::class, 'create']);
+Route::post('/tasks/delete/{id}', [TaskController::class, 'delete']);
+Route::get('/tasks/edit/{id}', [TaskController::class, 'edit']);
+Route::post('/tasks/edit/{id}', [TaskController::class, 'update']);
 
-Route::get('/about', function () {
-    $name = 'Reem';
-    $departments = [
-        '01' => 'Technical',
-        '02' => 'Financial',
-        '03' => 'Sales',
-    ];
-    return view('about', compact('name', 'departments'));
-});
 
-Route::post('/about', function () {
-    $name = request('name');
-    $departments = [
-        '01' => 'Technical',
-        '02' => 'Financial',
-        '03' => 'Sales',
-    ];
-    return view('about', compact('name', 'departments'));
-});
+Route::match(['get', 'post'], '/user', [UserController::class, 'index']); // عرض جميع المستخدمين وإضافة مستخدم جديد
 
-Route::get('/tasks', function () {
-    $tasks = DB::table('tasks')->get();
-    return view('tasks', compact('tasks'));
-});
+Route::get('/edit/{id}', [UserController::class, 'edit']); // عرض نموذج تعديل المستخدم
+Route::post('/edit/{id}', [UserController::class, 'update']); // تحديث بيانات المستخدم
 
-Route::post('/create', function (Request $request) {
-    $task_name = $request->input('name');
-
-    DB::table('tasks')->insert([
-        'name' => $task_name,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
-
-    return redirect()->back();
-});
-
-Route::post('/delete/{id}', function($id){
-    DB::table('tasks')->where('id', $id)->delete();
-    return redirect()->back();
-});
-
-Route::get('/edit/{id}', function($id){
-    $task = DB::table('tasks')->where('id', $id)->first();
-    $tasks = DB::table('tasks')->get();
-
-    return view('tasks', compact('task', 'tasks'));
-});
-
-Route::post('/update/{id}', function(Request $request, $id){
-    $task_name = $request->input('name');
-
-    DB::table('tasks')->where('id', $id)->update([
-        'name' => $task_name,
-        'updated_at' => now(),
-    ]);
-
-    return redirect('/tasks');
-});
+Route::post('/delete/{id}', [UserController::class, 'delete']); // حذف المستخدم
