@@ -2,73 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    // عرض جميع المستخدمين أو إضافة مستخدم جديد
-    public function index(Request $request)
+    // عرض جميع المستخدمين
+    public function index()
     {
-        // إذا كانت طريقة الطلب POST، فهذا يعني أن المستخدم يضيف مستخدم جديد
-        if ($request->isMethod('post')) {
-            $validated = $request->validate([
-                'name'     => 'required|string|max:255',
-                'email'    => 'required|email|max:255|unique:users,email',
-                'password' => 'required|min:6',
-            ]);
-
-            // حفظ المستخدم مع تشفير كلمة المرور
-            User::create([
-                'name'     => $validated['name'],
-                'email'    => $validated['email'],
-                'password' => bcrypt($validated['password']), // تشفير كلمة المرور هنا فقط
-            ]);
-
-            return redirect('/user')->with('success', 'User added successfully!');
-        }
-
-        // عرض قائمة المستخدمين
-        $users = User::all();
+        $users = DB::table('users')->get();
         return view('user', compact('users'));
     }
 
-    // عرض نموذج تعديل المستخدم
+    // إنشاء مستخدم جديد
+    public function create()
+    {
+        DB::table('users')->insert([
+            'name' => $_POST['name'],
+            'email' => $_POST['email'],
+            'password' => Hash::make($_POST['password']),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        return redirect('/users');
+    }
+
+    // عرض صفحة تعديل المستخدم
     public function edit($id)
     {
-        $user = User::findOrFail($id);
-        $users = User::all();
+        $user = DB::table('users')->where('id', $id)->first();
+        $users = DB::table('users')->get();
         return view('user', compact('user', 'users'));
     }
 
-    // تحديث بيانات المستخدم
-    public function update(Request $request, $id)
+    // تحديث اسم المستخدم فقط
+    public function update($id)
     {
-        $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|max:255',
-            'password' => 'nullable|min:6',
+        DB::table('users')->where('id', $id)->update([
+            'name' => $_POST['name'],
+            'updated_at' => now()
         ]);
-
-        $updateData = [
-            'name'  => $validated['name'],
-            'email' => $validated['email'],
-        ];
-
-        // تحديث كلمة المرور إذا كانت موجودة
-        if (!empty($validated['password'])) {
-            $updateData['password'] = bcrypt($validated['password']);
-        }
-
-        User::where('id', $id)->update($updateData);
-
-        return redirect('/user')->with('success', 'User updated successfully!');
+        return redirect('/users');
     }
 
     // حذف المستخدم
     public function delete($id)
     {
-        User::destroy($id);
-        return redirect('/user')->with('success', 'User deleted successfully!');
+        DB::table('users')->where('id', $id)->delete();
+        return redirect('/users');
     }
 }

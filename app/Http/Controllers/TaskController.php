@@ -2,32 +2,28 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    // عرض جميع المهام
     public function index()
     {
         $tasks = DB::table('tasks')->get();
         return view('tasks', compact('tasks'));
     }
 
-    public function create(Request $request)
+    // إنشاء مهمة جديدة
+    public function create()
     {
         DB::table('tasks')->insert([
-            'name' => $request->input('name'),
+            'name' => $_POST['name'],
             'created_at' => now(),
             'updated_at' => now()
         ]);
         return redirect('/tasks');
     }
 
-    public function delete($id)
-    {
-        DB::table('tasks')->where('id', $id)->delete();
-        return redirect('/tasks');
-    }
-
+    // عرض صفحة تعديل المهمة
     public function edit($id)
     {
         $task = DB::table('tasks')->where('id', $id)->first();
@@ -35,12 +31,20 @@ class TaskController extends Controller
         return view('tasks', compact('task', 'tasks'));
     }
 
-    public function update(Request $request, $id){
+    // تحديث اسم المهمة فقط
+    public function update($id)
+    {
         DB::table('tasks')->where('id', $id)->update([
-            'name' => $request->input('name'),
+            'name' => $_POST['name'],
             'updated_at' => now()
         ]);
         return redirect('/tasks');
     }
 
+    // حذف المهمة
+    public function delete($id)
+    {
+        DB::table('tasks')->where('id', $id)->delete();
+        return redirect('/tasks');
+    }
 }
