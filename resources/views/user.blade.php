@@ -100,14 +100,14 @@
 </div>
 
 <script>
-    // التحقق من الحقول الفارغة عند الإرسال
+    
     document.querySelector("form").addEventListener("submit", function(event) {
         let isValid = true;
         const name = document.getElementById("user-name");
         const email = document.getElementById("user-email");
         const password = document.getElementById("user-password");
 
-        // التحقق من الحقول الفارغة
+
         if (!name.value.trim()) {
             isValid = false;
             alert("Name is required!");
