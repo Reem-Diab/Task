@@ -15,11 +15,19 @@
                             <label for="user-name" class="form-label">Name</label>
                             <input type="text" name="name" id="user-name" class="form-control" value="{{ $user->name }}">
                         </div>
+                        <div class="mb-3">
+                            <label for="user-email" class="form-label">Email</label>
+                            <input type="email" name="email" id="user-email" class="form-control" value="{{ $user->email }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="user-password" class="form-label">New Password (Leave blank to keep current password)</label>
+                            <input type="password" name="password" id="user-password" class="form-control">
+                        </div>
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fa fa-save me-2"></i>Update User
                             </button>
-                            <a href="{{ url('users') }}" class="btn btn-secondary">
+                            <a href="{{ route('users.index') }}" class="btn btn-secondary">
                                 <i class="fa fa-arrow-left me-2"></i>Cancel
                             </a>
                         </div>
@@ -46,7 +54,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fa fa-plus me-2"></i>Add User
                             </button>
-                            <a href="{{ url('users') }}" class="btn btn-secondary">
+                            <a href="{{ route('users.index') }}" class="btn btn-secondary">
                                 <i class="fa fa-arrow-left me-2"></i>Cancel
                             </a>
                         </div>

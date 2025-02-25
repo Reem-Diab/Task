@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -10,19 +11,24 @@ class UserController extends Controller
     // عرض جميع المستخدمين
     public function index()
     {
-        $users = DB::table('users')->get();
+        $users = User::all();
+        return view('user', compact('users'));
+    }
+
+    // عرض نموذج إضافة مستخدم جديد
+    public function createForm()
+    {
+        $users = User::all();
         return view('user', compact('users'));
     }
 
     // إنشاء مستخدم جديد
-    public function create()
+    public function create(Request $request)
     {
-        DB::table('users')->insert([
-            'name' => $_POST['name'],
-            'email' => $_POST['email'],
-            'password' => Hash::make($_POST['password']),
-            'created_at' => now(),
-            'updated_at' => now()
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
         ]);
         return redirect('/users');
     }
@@ -30,25 +36,30 @@ class UserController extends Controller
     // عرض صفحة تعديل المستخدم
     public function edit($id)
     {
-        $user = DB::table('users')->where('id', $id)->first();
-        $users = DB::table('users')->get();
+        $user = User::findOrFail($id);
+        $users = User::all();
         return view('user', compact('user', 'users'));
     }
 
-    // تحديث اسم المستخدم فقط
-    public function update($id)
+    // تحديث المستخدم (الاسم، البريد الإلكتروني، وكلمة المرور)
+    public function update(Request $request, $id)
     {
-        DB::table('users')->where('id', $id)->update([
-            'name' => $_POST['name'],
-            'updated_at' => now()
-        ]);
+        $user = User::findOrFail($id);
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+        ];
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+        $user->update($data);
         return redirect('/users');
     }
 
     // حذف المستخدم
     public function delete($id)
     {
-        DB::table('users')->where('id', $id)->delete();
+        User::findOrFail($id)->delete();
         return redirect('/users');
     }
 }

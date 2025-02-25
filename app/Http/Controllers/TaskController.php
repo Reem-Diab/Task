@@ -1,24 +1,31 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\DB;
+
+use Illuminate\Http\Request;
+use App\Models\Task;
 
 class TaskController extends Controller
 {
     // عرض جميع المهام
     public function index()
     {
-        $tasks = DB::table('tasks')->get();
+        $tasks = Task::all();
+        return view('tasks', compact('tasks'));
+    }
+
+    // عرض نموذج إضافة مهمة جديدة
+    public function createForm()
+    {
+        $tasks = Task::all();
         return view('tasks', compact('tasks'));
     }
 
     // إنشاء مهمة جديدة
-    public function create()
+    public function create(Request $request)
     {
-        DB::table('tasks')->insert([
-            'name' => $_POST['name'],
-            'created_at' => now(),
-            'updated_at' => now()
+        Task::create([
+            'name' => $request->name,
         ]);
         return redirect('/tasks');
     }
@@ -26,17 +33,17 @@ class TaskController extends Controller
     // عرض صفحة تعديل المهمة
     public function edit($id)
     {
-        $task = DB::table('tasks')->where('id', $id)->first();
-        $tasks = DB::table('tasks')->get();
+        $task = Task::findOrFail($id);
+        $tasks = Task::all();
         return view('tasks', compact('task', 'tasks'));
     }
 
     // تحديث اسم المهمة فقط
-    public function update($id)
+    public function update(Request $request, $id)
     {
-        DB::table('tasks')->where('id', $id)->update([
-            'name' => $_POST['name'],
-            'updated_at' => now()
+        $task = Task::findOrFail($id);
+        $task->update([
+            'name' => $request->name,
         ]);
         return redirect('/tasks');
     }
@@ -44,7 +51,8 @@ class TaskController extends Controller
     // حذف المهمة
     public function delete($id)
     {
-        DB::table('tasks')->where('id', $id)->delete();
+        $task = Task::findOrFail($id);
+        $task->delete();
         return redirect('/tasks');
     }
 }
